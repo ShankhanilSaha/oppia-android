@@ -90,6 +90,14 @@ jobs:
       - name: Check Bazel environment
         run: bazel info
 
+      - name: Build Oppia ${{ matrix.flavor }} AAB (pre-Proguard dependencies)
+        if: ${{ matrix.flavor != 'dev' }}
+        run: bazel build --compilation_mode=opt -- //:oppia_${{ matrix.flavor }}_deployable
+
+      - name: Shut down Bazel to reclaim memory before final packaging
+        if: ${{ matrix.flavor != 'dev' }}
+        run: bazel shutdown
+
       - name: Build Oppia ${{ matrix.flavor }} AAB
         run: |
           if [[ "${{ matrix.flavor }}" == "dev" ]]; then
